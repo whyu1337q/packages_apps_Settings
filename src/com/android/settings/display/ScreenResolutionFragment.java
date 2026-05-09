@@ -189,6 +189,7 @@ public class ScreenResolutionFragment extends RadioButtonPickerFragment {
             mDefaultDisplay.setUserPreferredDisplayMode(mode);
         } catch (Exception e) {
             Log.e(TAG, "setUserPreferredDisplayMode() failed", e);
+            mDisplayObserver.stopObserve();
             return;
         }
 
@@ -335,7 +336,7 @@ public class ScreenResolutionFragment extends RadioButtonPickerFragment {
             final int currentIndex = density.getCurrentIndex();
             final int defaultDensity = density.getDefaultDensity();
 
-            if (density.getValues()[mCurrentIndex] == density.getDefaultDensity()) {
+            if (density.getValues()[currentIndex] == density.getDefaultDensity()) {
                 return;
             }
 
