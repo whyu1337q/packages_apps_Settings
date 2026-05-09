@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -150,8 +151,12 @@ public class ScreenResolutionFragment extends RadioButtonPickerFragment {
     private Display.Mode getPreferMode(int width) {
         for (Point resolution : mResolutions) {
             if (resolution.x == width) {
+                float refreshRate = Settings.System.getFloat(
+                        getContext().getContentResolver(),
+                        Settings.System.PEAK_REFRESH_RATE,
+                        getDisplayMode().getRefreshRate());
                 return new Display.Mode(
-                        resolution.x, resolution.y, getDisplayMode().getRefreshRate());
+                        resolution.x, resolution.y, refreshRate);
             }
         }
 
@@ -186,6 +191,9 @@ public class ScreenResolutionFragment extends RadioButtonPickerFragment {
             Log.e(TAG, "setUserPreferredDisplayMode() failed", e);
             return;
         }
+
+        SystemProperties.set("persist.sys.miui_resolution",
+                mode.getPhysicalWidth() + "x" + mode.getPhysicalHeight());
 
         /** Send the atom after resolution changed successfully. */
         SettingsStatsLog.write(
